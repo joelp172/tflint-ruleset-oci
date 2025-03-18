@@ -1,4 +1,4 @@
-module github.com/terraform-linters/tflint-ruleset-template
+module github.com/joelp172/tflint-ruleset-oci
 
 go 1.24.0
 

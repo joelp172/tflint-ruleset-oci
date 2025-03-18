@@ -12,13 +12,15 @@ This ruleset focus on possible errors and best practices for OCI resources. Many
 
 ## Installation
 
-You can install the plugin by adding a config to .tflint.hcl and running tflint --init:
+You can install the plugin by adding a config to `.tflint.hcl` and running `tflint --init`:
 
+```hcl
 plugin "oci" {
     enabled = true
     version = "0.1.0"
     source  = "github.com/joelp172/tflint-ruleset-oci"
 }
+```
 
 ## Rules
 

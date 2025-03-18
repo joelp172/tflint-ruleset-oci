@@ -17,7 +17,7 @@ You can install the plugin by adding a config to `.tflint.hcl` and running `tfli
 ```hcl
 plugin "oci" {
   enabled = true
-  version = "0.1.0"
+  version = "0.1.1"
   source  = "github.com/joelp172/tflint-ruleset-oci"
 
   signing_key = <<-KEY

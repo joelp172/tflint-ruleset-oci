@@ -70,55 +70,56 @@ func (r *OCINetworkSecurityGroupSSHRule) Check(runner tflint.Runner) error {
 
 	for _, resource := range resources.Blocks {
 		addr := resource.Labels[0]
-		
+
 		// Check direction
 		dirAttr, exists := resource.Body.Attributes["direction"]
 		if !exists {
 			continue
 		}
-		
+
 		var direction string
 		err := runner.EvaluateExpr(dirAttr.Expr, &direction, nil)
 		if err != nil {
 			return err
 		}
-		
+
 		if direction != "INGRESS" {
 			continue
 		}
-		
+
 		// Check source
 		sourceAttr, exists := resource.Body.Attributes["source"]
 		if !exists {
 			continue
 		}
-		
+
 		var source string
 		err = runner.EvaluateExpr(sourceAttr.Expr, &source, nil)
 		if err != nil {
-			return err
+			// Skip if we can't evaluate the source (likely a reference to another resource)
+			continue
 		}
-		
+
 		if source != "0.0.0.0/0" {
 			continue
 		}
-		
+
 		// Check protocol
 		protocolAttr, exists := resource.Body.Attributes["protocol"]
 		if !exists {
 			continue
 		}
-		
+
 		var protocol string
 		err = runner.EvaluateExpr(protocolAttr.Expr, &protocol, nil)
 		if err != nil {
 			return err
 		}
-		
+
 		if protocol != "6" && protocol != "all" { // 6 is TCP
 			continue
 		}
-		
+
 		// Check port ranges
 		var tcpOptions hclext.Blocks
 		for _, block := range resource.Body.Blocks {
@@ -133,26 +134,26 @@ func (r *OCINetworkSecurityGroupSSHRule) Check(runner tflint.Runner) error {
 					portRanges = append(portRanges, block)
 				}
 			}
-			
+
 			for _, portRange := range portRanges {
 				minAttr, minExists := portRange.Body.Attributes["min"]
 				maxAttr, maxExists := portRange.Body.Attributes["max"]
-				
+
 				if !minExists || !maxExists {
 					continue
 				}
-				
+
 				var min, max int
 				err = runner.EvaluateExpr(minAttr.Expr, &min, nil)
 				if err != nil {
 					return err
 				}
-				
+
 				err = runner.EvaluateExpr(maxAttr.Expr, &max, nil)
 				if err != nil {
 					return err
 				}
-				
+
 				// Check if port 22 is in range
 				if min <= 22 && max >= 22 {
 					runner.EmitIssue(

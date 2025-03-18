@@ -4,8 +4,8 @@ test:
 	go test ./...
 
 build:
-	go build
+	go build -o tflint-ruleset-oci
 
 install: build
 	mkdir -p ~/.tflint.d/plugins
-	mv ./tflint-ruleset-template ~/.tflint.d/plugins
+	mv ./tflint-ruleset-oci ~/.tflint.d/plugins
